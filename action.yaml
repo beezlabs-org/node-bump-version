@@ -1,0 +1,45 @@
+name: Node Bump Version
+description: Action to bump the version of a Nodejs project
+inputs:
+  pat:
+    description: PAT for accessing the application repo
+    required: true
+  newVersion:
+    description: The new version to bump to
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        token: ${{ inputs.pat }}
+
+    - name: Bump VERSION file
+      run: |
+        echo ${{ inputs.newVersion }} > VERSION
+      shell: bash
+
+    - name: Bump package.json and package-lock.json
+      run: |
+        yq -i -j -P '.version = "${{ inputs.newVersion }}"' 'package.json'
+        yq -i -j -P '.version = "${{ inputs.newVersion }}" | .packages[""].version = "${{ inputs.newVersion }}"' 'package-lock.json'
+      shell: bash
+
+    - name: Bump image tags in helm values
+      run: |
+        yq -i '.image.tag = "${{ inputs.newVersion }}"' './charts/values.dev.yaml'
+        yq -i '.image.tag = "${{ inputs.newVersion }}"' './charts/values.prod.yaml'
+      shell: bash
+    
+    - name: Commit Changes
+      env:
+        GIT_AUTHOR_NAME: Beez Innovation Labs
+        GIT_COMMITTER_NAME: Beez Innovation Labs
+        GIT_AUTHOR_EMAIL: github@beezlabs.com
+        GIT_COMMITTER_EMAIL: github@beezlabs.com
+      run: |
+        git add .
+        git diff-index --quiet HEAD || git commit -m "feat: bump version to ${{ inputs.newVersion }}"
+        git push
+      shell: bash
