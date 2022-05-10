@@ -4,7 +4,7 @@ inputs:
   pat:
     description: PAT for accessing the application repo
     required: true
-  newVersion:
+  new-version:
     description: The new version to bump to
     required: true
 runs:
@@ -17,19 +17,19 @@ runs:
 
     - name: Bump VERSION file
       run: |
-        echo ${{ inputs.newVersion }} > VERSION
+        echo ${{ inputs.new-version }} > VERSION
       shell: bash
 
     - name: Bump package.json and package-lock.json
       run: |
-        yq -i -j -P '.version = "${{ inputs.newVersion }}"' 'package.json'
-        yq -i -j -P '.version = "${{ inputs.newVersion }}" | .packages[""].version = "${{ inputs.newVersion }}"' 'package-lock.json'
+        yq -i -j -P '.version = "${{ inputs.new-version }}"' 'package.json'
+        yq -i -j -P '.version = "${{ inputs.new-version }}" | .packages[""].version = "${{ inputs.new-version }}"' 'package-lock.json'
       shell: bash
 
     - name: Bump image tags in helm values
       run: |
-        yq -i '.image.tag = "${{ inputs.newVersion }}"' './charts/values.dev.yaml'
-        yq -i '.image.tag = "${{ inputs.newVersion }}"' './charts/values.prod.yaml'
+        yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.dev.yaml'
+        yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.prod.yaml'
       shell: bash
     
     - name: Commit Changes
@@ -40,6 +40,6 @@ runs:
         GIT_COMMITTER_EMAIL: github@beezlabs.com
       run: |
         git add .
-        git diff-index --quiet HEAD || git commit -m "feat: bump version to ${{ inputs.newVersion }}"
+        git diff-index --quiet HEAD || git commit -m "feat: bump version to ${{ inputs.new-version }}"
         git push
       shell: bash
