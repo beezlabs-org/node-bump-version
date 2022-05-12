@@ -39,7 +39,7 @@ runs:
         GIT_AUTHOR_EMAIL: github@beezlabs.com
         GIT_COMMITTER_EMAIL: github@beezlabs.com
       run: |
-        git add .
+        git add -A
         git diff-index --quiet HEAD || git commit -m "feat: bump version to ${{ inputs.new-version }}"
         git push
       shell: bash
