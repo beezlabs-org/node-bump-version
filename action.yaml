@@ -30,6 +30,9 @@ runs:
       run: |
         yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.dev.yaml'
         yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.prod.yaml'
+        if [ -f "./charts/values.stage.yaml" ]; then
+          yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.stage.yaml'
+        fi
       shell: bash
     
     - name: Commit Changes
