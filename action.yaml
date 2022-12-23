@@ -23,7 +23,9 @@ runs:
     - name: Bump package.json and package-lock.json
       run: |
         yq -i -j -P '.version = "${{ inputs.new-version }}"' 'package.json'
-        yq -i -j -P '.version = "${{ inputs.new-version }}" | .packages[""].version = "${{ inputs.new-version }}"' 'package-lock.json'
+        if [ -f "./package-lock.json" ]; then
+          yq -i -j -P '.version = "${{ inputs.new-version }}" | .packages[""].version = "${{ inputs.new-version }}"' 'package-lock.json'
+        fi
       shell: bash
 
     - name: Bump image tags in helm values
