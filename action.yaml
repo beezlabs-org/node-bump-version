@@ -31,10 +31,10 @@ runs:
     - name: Bump image tags in helm values
       run: |
         if [ -f "./charts/values.dev.yaml" ]; then
-        yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.dev.yaml'
+          yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.dev.yaml'
         fi
         if [ -f "./charts/values.prod.yaml" ]; then
-        yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.prod.yaml'
+          yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.prod.yaml'
         fi
         if [ -f "./charts/values.stage.yaml" ]; then
           yq -i '.image.tag = "${{ inputs.new-version }}"' './charts/values.stage.yaml'
